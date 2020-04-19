@@ -4,6 +4,8 @@ import { Button, Container, Grid, TextField } from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
 
 import Cart from '../components/cart';
+import Lottie from 'react-lottie';
+import shop from '../assets/icons/shop';
 
 const initialValues = {
     cartList: [],
@@ -105,9 +107,21 @@ export default function Caixa() {
         });
     }
 
+    const iconOptions = {
+        loop: false,
+        autoplay: true,
+        animationData: shop,
+        rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice',
+        },
+    };
+
     return (
         <div className="flex-all-center-column-div flex-full">
             <Container maxWidth="md">
+                <div>
+                    <Lottie options={iconOptions} height={256} width={256} />
+                </div>
                 <Formik
                     initialValues={initialValues}
                     onSubmit={(values, { resetForm }) => {
@@ -120,11 +134,11 @@ export default function Caixa() {
                 >
                     {({ values }) => (
                         <Form>
-                            <Grid container spacing={10} alignItems="center">
-                                <Grid item xs={6}>
+                            <Grid container spacing={4} alignItems="center">
+                                <Grid item md={6} xs={12}>
                                     <Grid
                                         container
-                                        spacing={5}
+                                        spacing={2}
                                         alignItems="center"
                                         justify="center"
                                     >
@@ -140,8 +154,8 @@ export default function Caixa() {
                                                     <img
                                                         src={addedProductImage}
                                                         style={{
-                                                            height: 254,
-                                                            maxWidth: 254,
+                                                            height: 128,
+                                                            maxWidth: 128,
                                                             borderRadius: 3,
                                                         }}
                                                     />
@@ -182,7 +196,7 @@ export default function Caixa() {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item md={6} xs={12}>
                                     <Cart list={values.cartList} />
                                 </Grid>
                             </Grid>

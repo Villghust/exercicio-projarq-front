@@ -19,7 +19,7 @@ function PrivateRoute({ children, ...rest }) {
                 ) : (
                     <Redirect
                         to={{
-                            pathname: '/login',
+                            pathname: '/',
                             state: { from: location },
                         }}
                     />
@@ -34,7 +34,7 @@ export default function Routes() {
         <Router>
             <div className="root-div">
                 <Switch>
-                    <Route exact path="/login">
+                    <Route exact path="/">
                         <Login />
                     </Route>
                     <PrivateRoute exact path="/caixa">

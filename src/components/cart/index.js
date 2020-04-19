@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Divider, List, ListItem, Grid, Typography } from '@material-ui/core';
 import currency from 'currency.js';
+import PropTypes from 'prop-types';
+import emptyCart from '../../assets/icons/empty-cart.svg';
 
 export default function Cart({ list }) {
     function sumTotal({ list }) {
@@ -17,6 +19,29 @@ export default function Cart({ list }) {
     }
 
     const total = sumTotal({ list });
+
+    if (list.length < 1) {
+        return (
+            <div
+                style={{
+                    boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)',
+                    borderRadius: 3,
+                    minHeight: 256,
+                }}
+                className="flex-all-center-column-div"
+            >
+                <img
+                    src={emptyCart}
+                    alt="Carrinho vazio"
+                    width={112}
+                    height={112}
+                />
+                <Typography align="center" style={{ marginTop: 22 }}>
+                    Carrinho vazia
+                </Typography>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -53,3 +78,6 @@ export default function Cart({ list }) {
         </div>
     );
 }
+Cart.propTypes = {
+    list: PropTypes.array.isRequired,
+};
