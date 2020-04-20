@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
-
-import { Button, Container, Grid, TextField } from '@material-ui/core';
-import { Formik, Form, Field } from 'formik';
-
-import Cart from '../components/cart';
 import Lottie from 'react-lottie';
+
+import {
+    Button,
+    CircularProgress,
+    Container,
+    Dialog,
+    Grid,
+    List,
+    ListItem,
+    Snackbar,
+    TextField,
+    Typography,
+} from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
+import currency from 'currency.js';
+import { Formik, Form, Field } from 'formik';
+import PropTypes from 'prop-types';
+
 import shop from '../assets/icons/shop';
+import Cart from '../components/cart';
+import useApiRequest from '../hooks/useApiRequest';
 
 const initialValues = {
     cartList: [],
@@ -13,72 +28,79 @@ const initialValues = {
     quantity: 1,
 };
 
-export default function Caixa() {
-    const dummyProducts = [
-        {
-            _id: 1,
-            name: 'Coca-Cola',
-            price: 2.99,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.cfacdn.com%2Fimg%2Forder%2FCOM%2FMenu_Refresh%2FDrinks%2FDrinks%2520PDP%2F_0000s_0022_Feed_Menu_0000_Drinks_Coca-cola.png&f=1&nofb=1',
-        },
-        {
-            _id: 2,
-            name: 'Pepsi',
-            price: 2.89,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.willyjoes.com%2Fwp-content%2Fuploads%2F2014%2F02%2Fdq-drinks-soft-pepsi.png&f=1&nofb=1',
-        },
-        {
-            _id: 3,
-            name: 'Manteiga',
-            price: 1.99,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fbutter%2Fbutter_PNG17.png&f=1&nofb=1',
-        },
-        {
-            _id: 4,
-            name: 'Vinho',
-            price: 52.0,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fimg1.cookinglight.timeinc.net%2Fsites%2Fdefault%2Ffiles%2Fstyles%2F4_3_horizontal_-_1200x900%2Fpublic%2Fimage%2Fgettyimages-484649636-red-wine1.jpg%3Fitok%3DIvC3qi9Z&f=1&nofb=1',
-        },
-        {
-            _id: 5,
-            name: 'Arroz',
-            price: 5.2,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.hippressurecooking.com%2Fwp-content%2Fuploads%2F2013%2F09%2Fsteamed_rice_artc.jpg&f=1&nofb=1',
-        },
-        {
-            _id: 6,
-            name: 'Feijão',
-            price: 6.3,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.seriouseats.com%2Fimages%2F2016%2F07%2F20160707-legumes-red-kidney-beans-vicky-wasik-4-1500x1125.jpg&f=1&nofb=1',
-        },
-        {
-            _id: 7,
-            name: 'Açúcar',
-            price: 4.5,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.oxygenmag.com%2F.image%2Ft_share%2FMTUwNDI4MjUzMzk4ODM2OTA3%2Ftable-sugar.jpg&f=1&nofb=1',
-        },
-        {
-            _id: 8,
-            name: 'Farinha',
-            price: 2.85,
-            image:
-                'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.wisegeek.com%2Fflour-in-white-dish-on-table.jpg&f=1&nofb=1',
-        },
-    ];
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
+function ListProducts({ list, open, handleClose }) {
+    return (
+        <Dialog onClose={handleClose} open={open} fullWidth>
+            <List component="nav">
+                {list.map((product) => (
+                    <ListItem key={product._id}>
+                        <Grid container>
+                            <Grid item xs={6}>
+                                <Typography>{product._id}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography>{product.name}</Typography>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Typography align="right">
+                                    R${' '}
+                                    {currency(product.price)
+                                        .divide(100)
+                                        .format()}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </ListItem>
+                ))}
+            </List>
+        </Dialog>
+    );
+}
+ListProducts.propTypes = {
+    list: PropTypes.array.isRequired,
+    open: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+};
+
+export default function Caixa() {
+    const { data, loading, error } = useApiRequest(true, '/products');
+
+    // product image
     const [addedProductImage, setAddedProductImage] = useState('');
 
+    // snackbar status
+    const [open, setOpen] = useState({
+        status: false,
+        message: '',
+    });
+    const handleClick = ({ message }) => {
+        setOpen({
+            status: true,
+            message,
+        });
+    };
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen({ ...open, status: false });
+    };
+
+    // add products to cart
     function addToList({ values, resetForm, products }) {
         const product = products.find(
             (product) => String(product._id) === String(values.product)
         );
+        if (product === undefined) {
+            handleClick({ message: 'Produto não encontrado' });
+            resetForm();
+            return;
+        }
         let newCartList;
         if (
             values.cartList.filter(
@@ -107,6 +129,7 @@ export default function Caixa() {
         });
     }
 
+    // lottie icon
     const iconOptions = {
         loop: false,
         autoplay: true,
@@ -115,6 +138,32 @@ export default function Caixa() {
             preserveAspectRatio: 'xMidYMid slice',
         },
     };
+
+    // products listing
+    const [productListing, setProductListing] = useState(false);
+    const handleClickOpen = () => {
+        setProductListing(true);
+    };
+
+    const handleClickClose = () => {
+        setProductListing(false);
+    };
+
+    if (loading) {
+        return (
+            <div className="flex-all-center-column-div flex-full">
+                <CircularProgress />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div>
+                <Typography>Error!</Typography>
+            </div>
+        );
+    }
 
     return (
         <div className="flex-all-center-column-div flex-full">
@@ -128,7 +177,7 @@ export default function Caixa() {
                         addToList({
                             values,
                             resetForm,
-                            products: dummyProducts,
+                            products: data,
                         });
                     }}
                 >
@@ -151,14 +200,19 @@ export default function Caixa() {
                                                             'center',
                                                     }}
                                                 >
-                                                    <img
-                                                        src={addedProductImage}
-                                                        style={{
-                                                            height: 128,
-                                                            maxWidth: 128,
-                                                            borderRadius: 3,
-                                                        }}
-                                                    />
+                                                    {addedProductImage && (
+                                                        <img
+                                                            src={
+                                                                addedProductImage
+                                                            }
+                                                            style={{
+                                                                height: 128,
+                                                                maxWidth: 128,
+                                                                borderRadius: 3,
+                                                            }}
+                                                            alt="Produto"
+                                                        />
+                                                    )}
                                                 </div>
                                             </Grid>
                                         )}
@@ -193,6 +247,14 @@ export default function Caixa() {
                                             >
                                                 Adicionar
                                             </Button>
+                                            <Button
+                                                variant="outlined"
+                                                fullWidth
+                                                style={{ marginTop: 5 }}
+                                                onClick={handleClickOpen}
+                                            >
+                                                Listar produtos
+                                            </Button>
                                         </Grid>
                                     </Grid>
                                 </Grid>
@@ -200,10 +262,25 @@ export default function Caixa() {
                                     <Cart list={values.cartList} />
                                 </Grid>
                             </Grid>
+                            <ListProducts
+                                open={productListing}
+                                handleClose={handleClickClose}
+                                list={data}
+                            />
                         </Form>
                     )}
                 </Formik>
             </Container>
+            <Snackbar
+                open={open.status}
+                autoHideDuration={6000}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert onClose={handleClose} severity="error">
+                    {open.message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

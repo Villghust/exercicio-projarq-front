@@ -3,6 +3,7 @@ import React from 'react';
 import { Divider, List, ListItem, Grid, Typography } from '@material-ui/core';
 import currency from 'currency.js';
 import PropTypes from 'prop-types';
+
 import emptyCart from '../../assets/icons/empty-cart.svg';
 
 export default function Cart({ list }) {
@@ -10,9 +11,9 @@ export default function Cart({ list }) {
         let total = 0;
         list.forEach((listProduct) => {
             total = currency(total).add(
-                currency(listProduct.product.price).multiply(
-                    listProduct.quantity
-                )
+                currency(
+                    currency(listProduct.product.price).divide(100)
+                ).multiply(listProduct.quantity)
             );
         });
         return currency(total).format();
@@ -37,7 +38,7 @@ export default function Cart({ list }) {
                     height={112}
                 />
                 <Typography align="center" style={{ marginTop: 22 }}>
-                    Carrinho vazia
+                    Carrinho vazio
                 </Typography>
             </div>
         );
@@ -63,7 +64,11 @@ export default function Cart({ list }) {
                                 <Typography align="right">
                                     R${' '}
                                     {currency(product.quantity)
-                                        .multiply(product.product.price)
+                                        .multiply(
+                                            currency(
+                                                product.product.price
+                                            ).divide(100)
+                                        )
                                         .format()}
                                 </Typography>
                             </Grid>

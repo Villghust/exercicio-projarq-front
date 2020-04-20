@@ -8,13 +8,14 @@ import {
 
 import Caixa from './pages/caixa';
 import Login from './pages/login';
+import { isAuthenticated } from './utils/checkAuthentication';
 
 function PrivateRoute({ children, ...rest }) {
     return (
         <Route
             {...rest}
             render={({ location }) =>
-                true ? (
+                isAuthenticated() ? (
                     children
                 ) : (
                     <Redirect
