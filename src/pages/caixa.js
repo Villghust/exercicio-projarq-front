@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Lottie from 'react-lottie';
+import { useHistory } from 'react-router-dom';
 
 import {
     Button,
@@ -21,7 +22,6 @@ import PropTypes from 'prop-types';
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
 import useApiRequest from '../hooks/useApiRequest';
-import { useHistory } from 'react-router-dom';
 
 const initialValues = {
     cartList: [],

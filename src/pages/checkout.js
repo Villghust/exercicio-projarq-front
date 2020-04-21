@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
-import { Button, Container, Grid, Typography } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import Cart from '../components/cart';
-import wallet from '../assets/icons/wallet';
 import Lottie from 'react-lottie';
+import { useHistory } from 'react-router-dom';
+
+import { Button, Container, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
+import wallet from '../assets/icons/wallet';
+import Cart from '../components/cart';
 
 const buttonStyles = makeStyles({
     root: {

@@ -7,9 +7,9 @@ import {
 } from 'react-router-dom';
 
 import Caixa from './pages/caixa';
+import Checkout from './pages/checkout';
 import Login from './pages/login';
 import { isAuthenticated } from './utils/checkAuthentication';
-import Checkout from './pages/checkout';
 
 function PrivateRoute({ children, ...rest }) {
     return (
