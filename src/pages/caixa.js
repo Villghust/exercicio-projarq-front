@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
 import useApiRequest from '../hooks/useApiRequest';
+import { useHistory } from 'react-router-dom';
 
 const initialValues = {
     cartList: [],
@@ -67,6 +68,9 @@ ListProducts.propTypes = {
 };
 
 export default function Caixa() {
+    // history hook
+    const history = useHistory();
+
     const { data, loading, error } = useApiRequest(true, '/products');
 
     // product image
@@ -260,6 +264,20 @@ export default function Caixa() {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <Cart list={values.cartList} />
+                                    {values.cartList.length > 0 && (
+                                        <Button
+                                            fullWidth
+                                            variant="outlined"
+                                            style={{ marginTop: 10 }}
+                                            onClick={() =>
+                                                history.push('/checkout', {
+                                                    list: values.cartList,
+                                                })
+                                            }
+                                        >
+                                            Finalizar compra
+                                        </Button>
+                                    )}
                                 </Grid>
                             </Grid>
                             <ListProducts
