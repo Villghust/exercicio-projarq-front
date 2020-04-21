@@ -4,14 +4,19 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import GlobalStyle from './globalStyles';
 import Routes from './routes';
+import { StoreProvider } from './providers/Store';
+import SnackBar from './components/snackBar';
 
 function App() {
     return (
-        <div className="App">
-            <CssBaseline />
-            <GlobalStyle />
-            <Routes />
-        </div>
+        <StoreProvider>
+            <div className="App">
+                <CssBaseline />
+                <GlobalStyle />
+                <SnackBar />
+                <Routes />
+            </div>
+        </StoreProvider>
     );
 }
 

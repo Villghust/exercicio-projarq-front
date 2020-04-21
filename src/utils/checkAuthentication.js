@@ -12,5 +12,5 @@ export const saveToken = (token) => {
 };
 
 export const saveSession = (session_id) => {
-    window.localStorage.setItem('session_in', session_id);
+    window.localStorage.setItem('session_id', session_id);
 };

@@ -24,7 +24,7 @@ export default function LoginComponent() {
         username: yup.string().required('Nome de usuário é obrigatório'),
         password: yup
             .string()
-            .min(8, 'A senha deve conter no mínimo 8 caracteres')
+            .min(6, 'A senha deve conter no mínimo 8 caracteres')
             .required('Uma senha deve ser informada'),
     });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Lottie from 'react-lottie';
 import { useHistory } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
 import useApiRequest from '../hooks/useApiRequest';
 
-const initialValues = {
+let initialValues = {
     cartList: [],
     product: '',
     quantity: 1,
@@ -68,6 +68,15 @@ ListProducts.propTypes = {
 };
 
 export default function Caixa() {
+    // recreate initialValues when rendering form again (when coming back from checkout)
+    useEffect(() => {
+        initialValues = {
+            cartList: [],
+            product: '',
+            quantity: 1,
+        };
+    }, []);
+
     // history hook
     const history = useHistory();
 
@@ -125,7 +134,7 @@ export default function Caixa() {
                 quantity: values.quantity,
             });
         }
-        setAddedProductImage(product.image);
+        setAddedProductImage(product.image_link);
         resetForm({
             cartList: newCartList,
             product: '',
