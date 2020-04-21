@@ -2,10 +2,10 @@ import React from 'react';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import GlobalStyle from './globalStyles';
-import Routes from './routes';
-import { StoreProvider } from './providers/Store';
 import SnackBar from './components/snackBar';
+import GlobalStyle from './globalStyles';
+import { StoreProvider } from './providers/Store';
+import Routes from './routes';
 
 function App() {
     return (

@@ -9,6 +9,7 @@ import {
 import Caixa from './pages/caixa';
 import Checkout from './pages/checkout';
 import Login from './pages/login';
+import Logout from './pages/logout';
 import { isAuthenticated } from './utils/checkAuthentication';
 
 function PrivateRoute({ children, ...rest }) {
@@ -44,6 +45,9 @@ export default function Routes() {
                     </PrivateRoute>
                     <PrivateRoute exact path="/checkout">
                         <Checkout />
+                    </PrivateRoute>
+                    <PrivateRoute exact path="/logout">
+                        <Logout />
                     </PrivateRoute>
                 </Switch>
             </div>

@@ -273,7 +273,7 @@ export default function Caixa() {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <Cart list={values.cartList} />
-                                    {values.cartList.length > 0 && (
+                                    {values.cartList.length > 0 ? (
                                         <Button
                                             fullWidth
                                             variant="outlined"
@@ -285,6 +285,17 @@ export default function Caixa() {
                                             }
                                         >
                                             Finalizar compra
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            fullWidth
+                                            variant="outlined"
+                                            style={{ marginTop: 10 }}
+                                            onClick={() =>
+                                                history.push('/logout')
+                                            }
+                                        >
+                                            Finalizar sessão
                                         </Button>
                                     )}
                                 </Grid>

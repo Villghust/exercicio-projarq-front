@@ -4,13 +4,13 @@ import { useHistory } from 'react-router-dom';
 
 import { Button, Container, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import currency from 'currency.js';
 import { Form, Formik } from 'formik';
 
 import wallet from '../assets/icons/wallet';
 import Cart from '../components/cart';
-import currency from 'currency.js';
-import api from '../services/api';
 import useSnackBar from '../hooks/useSnackBar';
+import api from '../services/api';
 
 const buttonStyles = makeStyles({
     root: {
