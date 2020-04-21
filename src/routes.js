@@ -6,6 +6,8 @@ import {
     Redirect,
 } from 'react-router-dom';
 
+import PropTypes from 'prop-types';
+
 import Caixa from './pages/caixa';
 import Checkout from './pages/checkout';
 import Login from './pages/login';
@@ -31,6 +33,9 @@ function PrivateRoute({ children, ...rest }) {
         />
     );
 }
+PrivateRoute.propTypes = {
+    children: PropTypes.element.isRequired,
+};
 
 export default function Routes() {
     return (
