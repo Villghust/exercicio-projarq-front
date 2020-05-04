@@ -6,7 +6,7 @@ import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 
 import useSnackBar from '../../hooks/useSnackBar';
-import api from '../../services/api';
+import SessionController from '../../controllers/SessionController';
 import {
     isAuthenticated,
     saveSession,
@@ -44,7 +44,7 @@ export default function LoginComponent() {
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={async (values, { resetForm }) => {
-                        api.post('/sessions', {
+                        SessionController.store( {
                             email: values.username,
                             password: values.password,
                         })
