@@ -9,8 +9,8 @@ import { Form, Formik } from 'formik';
 
 import wallet from '../assets/icons/wallet';
 import Cart from '../components/cart';
+import { store } from '../controllers/PurchaseController';
 import useSnackBar from '../hooks/useSnackBar';
-import api from '../services/api';
 
 const buttonStyles = makeStyles({
     root: {
@@ -96,15 +96,15 @@ export default function Checkout() {
                         session_id: window.localStorage.getItem('session_id'),
                         payment_type: '',
                     }}
-                    onSubmit={async (values) => {
-                        try {
-                            await api.post('/purchases', { ...values });
+                    onSubmit={(values) => {
+                        const order = store({ ...values });
+                        if (!order.error) {
                             snackBarContext.openSnackBar({
                                 message: 'Compra finalizada',
                                 status: 'success',
                             });
                             history.push('/caixa');
-                        } catch (e) {
+                        } else {
                             snackBarContext.openSnackBar({
                                 message: 'Erro ao finalizar a compra',
                                 status: 'error',

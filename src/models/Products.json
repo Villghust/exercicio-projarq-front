@@ -1,0 +1,67 @@
+{
+  "Products": [
+    {
+      "_id" : "5e9d0e7f3e1e5a841cfd3c90",
+      "name" : "Coca-Cola",
+      "price" : 299,
+      "stock_quantity" : 3,
+      "image_link" : "https://shortysliquor.com.au/media/catalog/product/cache/2fcc3329aef4183c8e06230d7e06f8f3/2/4/247_5.png",
+      "createdAt" : "2020-04-20T02:52:47.604Z",
+      "updatedAt" : "2020-04-22T22:34:27.740Z"
+    },
+    {
+      "_id" : "5e9d0eeb3e1e5a841cfd3c91",
+      "name" : "Pepsi",
+      "price" : 288,
+      "stock_quantity" : -9,
+      "image_link" : "https://metrouk2.files.wordpress.com/2015/05/pepsi.png",
+      "createdAt" : "2020-04-20T02:54:35.569Z",
+      "updatedAt" : "2020-04-24T22:30:13.005Z"
+    },
+    {
+      "_id" : "5e9d0f343e1e5a841cfd3c92",
+      "name" : "Vinho",
+      "price" : 4990,
+      "stock_quantity" : 2,
+      "image_link" : "https://s-media-cache-ak0.pinimg.com/originals/44/06/a8/4406a8eb3c3029f6c9aae4dd93a70aac.png",
+      "createdAt" : "2020-04-20T02:55:48.075Z",
+      "updatedAt" : "2020-04-24T22:30:13.012Z"
+    },
+    {
+      "_id" : "5e9d0f5a3e1e5a841cfd3c93",
+      "name" : "Arroz",
+      "price" : 599,
+      "stock_quantity" : 7,
+      "image_link" : "http://pngimg.com/uploads/rice/rice_PNG22.png",
+      "createdAt" : "2020-04-20T02:56:26.733Z",
+      "updatedAt" : "2020-04-24T22:30:31.772Z"
+    },
+    {
+      "_id" : "5e9d0f853e1e5a841cfd3c94",
+      "name" : "Feijão",
+      "price" : 699,
+      "stock_quantity" : 5,
+      "image_link" : "https://foodservice.bonduelleamericas.com/media/cache/ae/cf/aecf62467df9c703044f84f200631bce.png",
+      "createdAt" : "2020-04-20T02:57:09.831Z",
+      "updatedAt" : "2020-04-24T22:30:31.767Z"
+    },
+    {
+      "_id" : "5e9d0faa3e1e5a841cfd3c95",
+      "name" : "Açúcar",
+      "price" : 359,
+      "stock_quantity" : 7,
+      "image_link" : "https://www.jeancoutu.com/globalassets/revamp/sante/conseils-sante/20150309-01-sucre-sante/image-principale.png",
+      "createdAt" : "2020-04-20T02:57:46.583Z",
+      "updatedAt" : "2020-04-21T22:27:58.481Z"
+    },
+    {
+      "_id" : "5e9d0ff33e1e5a841cfd3c96",
+      "name" : "Farinha",
+      "price" : 317,
+      "stock_quantity" : 6,
+      "image_link" : "https://www.nuffoodsspectrum.in/uploads/articles/1-4371.jpg",
+      "createdAt" : "2020-04-20T02:58:59.535Z",
+      "updatedAt" : "2020-04-22T22:34:55.583Z"
+    }
+  ]
+}

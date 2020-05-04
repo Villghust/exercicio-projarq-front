@@ -1,0 +1,8 @@
+{
+  "Users": [{
+    "_id" : "5e9d0e1f3e1e5a841cfd3c8f",
+    "name" : "Otavio Bonder",
+    "email" : "otavio.bonder@acad.pucrs.br",
+    "password_hash" : "$2a$08$6n2jlfARI8HVtB0haXau2O1jbUC7CZVH.CHNGtVy6JU2orNr9GLuu"
+  }]
+}

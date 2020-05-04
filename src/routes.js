@@ -8,11 +8,11 @@ import {
 
 import PropTypes from 'prop-types';
 
-import Caixa from './pages/caixa';
-import Checkout from './pages/checkout';
-import Login from './pages/login';
-import Logout from './pages/logout';
 import { isAuthenticated } from './utils/checkAuthentication';
+import Caixa from './views/caixa';
+import Checkout from './views/checkout';
+import Login from './views/login';
+import Logout from './views/logout';
 
 function PrivateRoute({ children, ...rest }) {
     return (

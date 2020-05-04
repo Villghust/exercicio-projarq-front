@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
-import useApiRequest from '../hooks/useApiRequest';
+import Products from '../models/Products.json';
 
 let initialValues = {
     cartList: [],
@@ -80,7 +80,7 @@ export default function Caixa() {
     // history hook
     const history = useHistory();
 
-    const { data, loading, error } = useApiRequest(true, '/products');
+    const data = Products.Products;
 
     // product image
     const [addedProductImage, setAddedProductImage] = useState('');
@@ -162,7 +162,7 @@ export default function Caixa() {
         setProductListing(false);
     };
 
-    if (loading) {
+    /*    if (loading) {
         return (
             <div className="flex-all-center-column-div flex-full">
                 <CircularProgress />
@@ -176,7 +176,7 @@ export default function Caixa() {
                 <Typography>Error!</Typography>
             </div>
         );
-    }
+    }*/
 
     return (
         <div className="flex-all-center-column-div flex-full">

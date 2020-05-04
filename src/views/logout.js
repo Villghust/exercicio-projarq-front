@@ -15,15 +15,14 @@ import {
 } from '@material-ui/core';
 import currency from 'currency.js';
 
-import useApiRequest from '../hooks/useApiRequest';
+import { list } from '../controllers/PurchaseController';
+import { deleteSession } from '../controllers/SessionController';
 import useSnackBar from '../hooks/useSnackBar';
-import api from '../services/api';
 
 export default function Logout() {
-    const { data, loading, error } = useApiRequest(
-        true,
-        `/purchases?session_id=${window.localStorage.getItem('session_id')}`
-    );
+    const data = list({
+        session_id: window.localStorage.getItem('session_id'),
+    });
 
     const history = useHistory();
 
@@ -41,7 +40,7 @@ export default function Logout() {
         return currency(total).divide(100).format();
     }
 
-    if (loading) {
+    /*    if (loading) {
         return (
             <div className="flex-all-center-column-div flex-full">
                 <CircularProgress />
@@ -51,27 +50,21 @@ export default function Logout() {
 
     if (error) {
         return <p>Erro!</p>;
-    }
+    }*/
 
     // logout
     async function finalizeSession() {
-        try {
-            await api.delete(
-                `/sessions/${window.localStorage.getItem('session_id')}`
-            );
-            snackbarContext.openSnackBar({
-                message: 'Sessão finalizada!',
-                status: 'success',
-            });
-            window.localStorage.removeItem('session_id');
-            window.localStorage.removeItem('token');
-            history.push('/');
-        } catch (e) {
-            snackbarContext.openSnackBar({
-                message: 'Erro ao finalizar sessão',
-                status: 'error',
-            });
-        }
+        deleteSession({
+            sessionId: window.localStorage.getItem('session_id'),
+        });
+
+        snackbarContext.openSnackBar({
+            message: 'Sessão finalizada!',
+            status: 'success',
+        });
+        window.localStorage.removeItem('session_id');
+        window.localStorage.removeItem('token');
+        history.push('/');
     }
 
     return (

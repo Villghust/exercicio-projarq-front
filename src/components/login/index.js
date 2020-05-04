@@ -5,8 +5,8 @@ import { Container, Button, TextField } from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 
+import { store } from '../../controllers/SessionController';
 import useSnackBar from '../../hooks/useSnackBar';
-import api from '../../services/api';
 import {
     isAuthenticated,
     saveSession,
@@ -44,25 +44,24 @@ export default function LoginComponent() {
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={async (values, { resetForm }) => {
-                        api.post('/sessions', {
+                        const user = await store({
                             email: values.username,
                             password: values.password,
-                        })
-                            .then((response) => {
-                                snackbarContext.openSnackBar({
-                                    message: 'Login efetuado!',
-                                    status: 'success',
-                                });
-                                saveToken(response.data.token);
-                                saveSession(response.data.session_id);
-                                history.push('/caixa');
-                            })
-                            .catch(() => {
-                                snackbarContext.openSnackBar({
-                                    message: 'Erro ao fazer login',
-                                    status: 'error',
-                                });
+                        });
+                        if (!user.error) {
+                            snackbarContext.openSnackBar({
+                                message: 'Login efetuado!',
+                                status: 'success',
                             });
+                            saveToken(user.token);
+                            saveSession(user.session_id);
+                            history.push('/caixa');
+                        } else {
+                            snackbarContext.openSnackBar({
+                                message: 'Erro ao fazer login',
+                                status: 'error',
+                            });
+                        }
                     }}
                 >
                     {({ errors, touched }) => (
