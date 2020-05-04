@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
-import ProductController from '../controllers/ProductController';
+import useApiRequest from '../hooks/useApiRequest';
 
 let initialValues = {
     cartList: [],
@@ -80,7 +80,7 @@ export default function Caixa() {
     // history hook
     const history = useHistory();
 
-    const { data, loading, error } = ProductController.list(true);
+    const { data, loading, error } = useApiRequest(true, '/products');
 
     // product image
     const [addedProductImage, setAddedProductImage] = useState('');

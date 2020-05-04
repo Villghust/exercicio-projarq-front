@@ -10,7 +10,7 @@ import { Form, Formik } from 'formik';
 import wallet from '../assets/icons/wallet';
 import Cart from '../components/cart';
 import useSnackBar from '../hooks/useSnackBar';
-import PurchaseController from '../controllers/PurchaseController';
+import api from '../services/api';
 
 const buttonStyles = makeStyles({
     root: {
@@ -98,7 +98,7 @@ export default function Checkout() {
                     }}
                     onSubmit={async (values) => {
                         try {
-                            await PurchaseController.store({ ...values });
+                            await api.post('/purchases', { ...values });
                             snackBarContext.openSnackBar({
                                 message: 'Compra finalizada',
                                 status: 'success',
