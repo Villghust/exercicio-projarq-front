@@ -15,14 +15,14 @@ import {
 } from '@material-ui/core';
 import currency from 'currency.js';
 
-
-import PurchaseController from '../controllers/PurchaseController';
+import useApiRequest from '../hooks/useApiRequest';
 import useSnackBar from '../hooks/useSnackBar';
-import SessionController from '../controllers/SessionController';
+import api from '../services/api';
 
 export default function Logout() {
-    const { data, loading, error } = PurchaseController.list(
-        true, window.localStorage.getItem('session_id')
+    const { data, loading, error } = useApiRequest(
+        true,
+        `/purchases?session_id=${window.localStorage.getItem('session_id')}`
     );
 
     const history = useHistory();
@@ -56,8 +56,8 @@ export default function Logout() {
     // logout
     async function finalizeSession() {
         try {
-            await SessionController.delete(
-                window.localStorage.getItem('session_id')
+            await api.delete(
+                `/sessions/${window.localStorage.getItem('session_id')}`
             );
             snackbarContext.openSnackBar({
                 message: 'Sessão finalizada!',
