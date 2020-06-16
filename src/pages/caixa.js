@@ -22,6 +22,9 @@ import PropTypes from 'prop-types';
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
 import useApiRequest from '../hooks/useApiRequest';
+import { useDispatch, useSelector } from 'react-redux';
+import { openSnackbar } from '../actions/snackbarActions';
+import { addToCart } from '../actions/cartActions';
 
 let initialValues = {
     cartList: [],
@@ -33,7 +36,8 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function ListProducts({ list, open, handleClose }) {
+function ListProducts({ open, handleClose }) {
+    const list = useSelector((state) => state.stockProducts.products);
     return (
         <Dialog onClose={handleClose} open={open} fullWidth>
             <List component="nav">
@@ -62,7 +66,6 @@ function ListProducts({ list, open, handleClose }) {
     );
 }
 ListProducts.propTypes = {
-    list: PropTypes.array.isRequired,
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
 };
@@ -71,16 +74,22 @@ export default function Caixa() {
     // recreate initialValues when rendering form again (when coming back from checkout)
     useEffect(() => {
         initialValues = {
-            cartList: [],
             product: '',
             quantity: 1,
         };
     }, []);
 
+    // dispatch snackbar
+    const dispatch = useDispatch();
+
+    // stock products state
+    const stockProductsState = useSelector((state) => state.stockProducts);
+
+    // products in cart
+    const cartList = useSelector((state) => state.cart.list);
+
     // history hook
     const history = useHistory();
-
-    const { data, loading, error } = useApiRequest(true, '/products');
 
     // product image
     const [addedProductImage, setAddedProductImage] = useState('');
@@ -105,38 +114,21 @@ export default function Caixa() {
     };
 
     // add products to cart
-    function addToList({ values, resetForm, products }) {
-        const product = products.find(
-            (product) => String(product._id) === String(values.product)
+    function addToList({ values, resetForm }) {
+        const matchedProduct = stockProductsState.products.filter(
+            (product) => product._id === values.product
         );
-        if (product === undefined) {
-            handleClick({ message: 'Produto não encontrado' });
-            resetForm();
-            return;
+        if (matchedProduct.length === 0) {
+            return dispatch(
+                openSnackbar({
+                    message: 'Produto não encontrado',
+                    status: 'error',
+                })
+            );
         }
-        let newCartList;
-        if (
-            values.cartList.filter(
-                (listProduct) => listProduct.product._id === product._id
-            ).length > 0
-        ) {
-            values.cartList.map((listProduct) => {
-                if (listProduct.product._id === product._id) {
-                    listProduct.quantity =
-                        parseInt(listProduct.quantity) +
-                        parseInt(values.quantity);
-                    return listProduct;
-                } else return listProduct;
-            });
-        } else {
-            newCartList = values.cartList.push({
-                product: product,
-                quantity: values.quantity,
-            });
-        }
-        setAddedProductImage(product.image_link);
+        dispatch(addToCart(matchedProduct[0], values.quantity));
+        setAddedProductImage(matchedProduct[0].image_link);
         resetForm({
-            cartList: newCartList,
             product: '',
             quantity: 1,
         });
@@ -162,22 +154,6 @@ export default function Caixa() {
         setProductListing(false);
     };
 
-    if (loading) {
-        return (
-            <div className="flex-all-center-column-div flex-full">
-                <CircularProgress />
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div>
-                <Typography>Error!</Typography>
-            </div>
-        );
-    }
-
     return (
         <div className="flex-all-center-column-div flex-full">
             <Container maxWidth="md">
@@ -190,7 +166,6 @@ export default function Caixa() {
                         addToList({
                             values,
                             resetForm,
-                            products: data,
                         });
                     }}
                 >
@@ -272,8 +247,8 @@ export default function Caixa() {
                                     </Grid>
                                 </Grid>
                                 <Grid item md={6} xs={12}>
-                                    <Cart list={values.cartList} />
-                                    {values.cartList.length > 0 ? (
+                                    <Cart />
+                                    {cartList.length > 0 ? (
                                         <Button
                                             fullWidth
                                             variant="outlined"
@@ -303,7 +278,6 @@ export default function Caixa() {
                             <ListProducts
                                 open={productListing}
                                 handleClose={handleClickClose}
-                                list={data}
                             />
                         </Form>
                     )}

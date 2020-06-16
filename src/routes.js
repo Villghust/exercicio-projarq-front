@@ -13,8 +13,31 @@ import Checkout from './pages/checkout';
 import Login from './pages/login';
 import Logout from './pages/logout';
 import { isAuthenticated } from './utils/checkAuthentication';
+import useUpdateProducts from './hooks/useUpdateProducts';
+import { useSelector } from 'react-redux';
+import { CircularProgress, Typography } from '@material-ui/core';
 
 function PrivateRoute({ children, ...rest }) {
+    useUpdateProducts();
+
+    const stockProductsState = useSelector((state) => state.stockProducts);
+
+    if (stockProductsState.loading) {
+        return (
+            <div className="flex-all-center-column-div flex-full">
+                <CircularProgress />
+            </div>
+        );
+    }
+
+    if (stockProductsState.error) {
+        return (
+            <div>
+                <Typography>Error!</Typography>
+            </div>
+        );
+    }
+
     return (
         <Route
             {...rest}

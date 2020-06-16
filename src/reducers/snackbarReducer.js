@@ -6,7 +6,7 @@ export const initialState = {
     status: '',
 };
 
-export const reducer = (state, action) => {
+const snackbarReducer = (state = initialState, action) => {
     switch (action.type) {
         case types.OPEN_SNACKBAR:
             return {
@@ -25,6 +25,4 @@ export const reducer = (state, action) => {
     }
 };
 
-export const register = (globalState) => {
-    globalState.snackBar = initialState;
-};
+export default snackbarReducer;

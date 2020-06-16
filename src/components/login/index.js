@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Container, Button, TextField } from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 
-import useSnackBar from '../../hooks/useSnackBar';
+import { openSnackbar } from '../../actions/snackbarActions';
 import api from '../../services/api';
 import {
     isAuthenticated,
@@ -16,7 +17,7 @@ import {
 export default function LoginComponent() {
     let history = useHistory();
 
-    const snackbarContext = useSnackBar();
+    const dispatch = useDispatch();
 
     const validationSchema = yup.object().shape({
         username: yup.string().required('Nome de usuário é obrigatório'),
@@ -49,19 +50,23 @@ export default function LoginComponent() {
                             password: values.password,
                         })
                             .then((response) => {
-                                snackbarContext.openSnackBar({
-                                    message: 'Login efetuado!',
-                                    status: 'success',
-                                });
+                                dispatch(
+                                    openSnackbar({
+                                        message: 'Login efetuado!',
+                                        status: 'success',
+                                    })
+                                );
                                 saveToken(response.data.token);
                                 saveSession(response.data.session_id);
                                 history.push('/caixa');
                             })
                             .catch(() => {
-                                snackbarContext.openSnackBar({
-                                    message: 'Erro ao fazer login',
-                                    status: 'error',
-                                });
+                                dispatch(
+                                    openSnackbar({
+                                        message: 'Erro ao fazer login',
+                                        status: 'error',
+                                    })
+                                );
                             });
                     }}
                 >

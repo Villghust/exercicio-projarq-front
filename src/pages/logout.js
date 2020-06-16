@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -15,8 +16,8 @@ import {
 } from '@material-ui/core';
 import currency from 'currency.js';
 
+import { openSnackbar } from '../actions/snackbarActions';
 import useApiRequest from '../hooks/useApiRequest';
-import useSnackBar from '../hooks/useSnackBar';
 import api from '../services/api';
 
 export default function Logout() {
@@ -28,7 +29,7 @@ export default function Logout() {
     const history = useHistory();
 
     // snackbar
-    const snackbarContext = useSnackBar();
+    const dispatch = useDispatch();
 
     // sum total per payment option
     function sumTotal({ paymentOption }) {
@@ -59,18 +60,22 @@ export default function Logout() {
             await api.delete(
                 `/sessions/${window.localStorage.getItem('session_id')}`
             );
-            snackbarContext.openSnackBar({
-                message: 'Sessão finalizada!',
-                status: 'success',
-            });
+            dispatch(
+                openSnackbar({
+                    message: 'Sessão finalizada!',
+                    status: 'success',
+                })
+            );
             window.localStorage.removeItem('session_id');
             window.localStorage.removeItem('token');
             history.push('/');
         } catch (e) {
-            snackbarContext.openSnackBar({
-                message: 'Erro ao finalizar sessão',
-                status: 'error',
-            });
+            dispatch(
+                openSnackbar({
+                    message: 'Erro ao finalizar sessão',
+                    status: 'error',
+                })
+            );
         }
     }
 

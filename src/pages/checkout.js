@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Lottie from 'react-lottie';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Button, Container, Grid, Typography } from '@material-ui/core';
@@ -7,10 +8,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import currency from 'currency.js';
 import { Form, Formik } from 'formik';
 
+import { openSnackbar } from '../actions/snackbarActions';
 import wallet from '../assets/icons/wallet';
 import Cart from '../components/cart';
-import useSnackBar from '../hooks/useSnackBar';
 import api from '../services/api';
+import { resetCart } from '../actions/cartActions';
 
 const buttonStyles = makeStyles({
     root: {
@@ -24,11 +26,11 @@ export default function Checkout() {
     const buttonClasses = buttonStyles();
 
     // get list from history state
-    const { list } = history.location.state;
+    const list = useSelector((state) => state.cart.list);
 
     // redirect to caixa in case of empty list
     useEffect(() => {
-        if (!list) {
+        if (list.length === 0) {
             history.push('/caixa');
         }
         //eslint-disable-next-line
@@ -73,8 +75,8 @@ export default function Checkout() {
         let product_list = [];
         list.forEach((product) => {
             const productToArray = {
-                id: product.product._id,
-                price: product.product.price,
+                id: product._id,
+                price: product.price,
                 quantity: product.quantity,
             };
             product_list.push(productToArray);
@@ -83,7 +85,7 @@ export default function Checkout() {
     }
 
     // open snackbar
-    const snackBarContext = useSnackBar();
+    const dispatch = useDispatch();
 
     return (
         <div className="flex-all-center-column-div flex-full">
@@ -99,16 +101,21 @@ export default function Checkout() {
                     onSubmit={async (values) => {
                         try {
                             await api.post('/purchases', { ...values });
-                            snackBarContext.openSnackBar({
-                                message: 'Compra finalizada',
-                                status: 'success',
-                            });
+                            dispatch(
+                                openSnackbar({
+                                    message: 'Compra finalizada',
+                                    status: 'success',
+                                })
+                            );
+                            dispatch(resetCart());
                             history.push('/caixa');
                         } catch (e) {
-                            snackBarContext.openSnackBar({
-                                message: 'Erro ao finalizar a compra',
-                                status: 'error',
-                            });
+                            dispatch(
+                                openSnackbar({
+                                    message: 'Erro ao finalizar a compra',
+                                    status: 'error',
+                                })
+                            );
                         }
                     }}
                 >

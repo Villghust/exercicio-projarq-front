@@ -2,18 +2,20 @@ import React from 'react';
 
 import { Divider, List, ListItem, Grid, Typography } from '@material-ui/core';
 import currency from 'currency.js';
-import PropTypes from 'prop-types';
 
 import emptyCart from '../../assets/icons/empty-cart.svg';
+import { useSelector } from 'react-redux';
 
-export default function Cart({ list }) {
+export default function Cart() {
+    const list = useSelector((state) => state.cart.list);
+
     function sumTotal({ list }) {
         let total = 0;
         list.forEach((listProduct) => {
             total = currency(total).add(
-                currency(
-                    currency(listProduct.product.price).divide(100)
-                ).multiply(listProduct.quantity)
+                currency(listProduct.price)
+                    .divide(100)
+                    .multiply(listProduct.quantity)
             );
         });
         return currency(total).format();
@@ -53,11 +55,11 @@ export default function Cart({ list }) {
         >
             <List component="nav">
                 {list.map((product) => (
-                    <ListItem key={product.product._id}>
+                    <ListItem key={product._id}>
                         <Grid container>
                             <Grid item xs={6}>
                                 <Typography>
-                                    {product.quantity} x {product.product.name}
+                                    {product.quantity} x {product.name}
                                 </Typography>
                             </Grid>
                             <Grid item xs={6}>
@@ -65,9 +67,7 @@ export default function Cart({ list }) {
                                     R${' '}
                                     {currency(product.quantity)
                                         .multiply(
-                                            currency(
-                                                product.product.price
-                                            ).divide(100)
+                                            currency(product.price).divide(100)
                                         )
                                         .format()}
                                 </Typography>
@@ -83,6 +83,3 @@ export default function Cart({ list }) {
         </div>
     );
 }
-Cart.propTypes = {
-    list: PropTypes.array.isRequired,
-};

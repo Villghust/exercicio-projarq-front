@@ -1,15 +1,13 @@
-import {
-    register as snackBarRegister,
-    reducer as snackBarReducer,
-} from './snackBarReducer';
+import { combineReducers } from 'redux';
 
-export const initialState = {};
-export const actions = {};
+import snackbarReducer from './snackbarReducer';
+import stockProductsReducer from './stockProductsReducer';
+import cartReducer from './cartReducer';
 
-snackBarRegister(initialState, actions);
+const rootReducers = combineReducers({
+    snackbar: snackbarReducer,
+    stockProducts: stockProductsReducer,
+    cart: cartReducer,
+});
 
-export const reducer = (state, action) => {
-    return {
-        snackBar: snackBarReducer(state.snackBar, action),
-    };
-};
+export default rootReducers;
