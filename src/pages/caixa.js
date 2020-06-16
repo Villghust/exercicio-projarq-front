@@ -5,17 +5,15 @@ import { useHistory } from 'react-router-dom';
 
 import {
     Button,
-    CircularProgress,
     Container,
     Dialog,
     Grid,
     List,
     ListItem,
-    Snackbar,
     TextField,
     Typography,
 } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles } from '@material-ui/core/styles';
 import currency from 'currency.js';
 import { Formik, Form, Field } from 'formik';
 import PropTypes from 'prop-types';
@@ -24,7 +22,6 @@ import { addToCart } from '../actions/cartActions';
 import { openSnackbar } from '../actions/snackbarActions';
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
-import useApiRequest from '../hooks/useApiRequest';
 
 let initialValues = {
     cartList: [],
@@ -32,31 +29,77 @@ let initialValues = {
     quantity: 1,
 };
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+const useStyles = makeStyles({
+    paper: {
+        padding: 24,
+    },
+});
 
-function ListProducts({ open, handleClose }) {
+function ListProducts({ open, handleClose, addToList }) {
+    const classes = useStyles();
     const list = useSelector((state) => state.stockProducts.products);
+
+    function handleClick(id) {
+        addToList({ values: { product: id, quantity: 1 } });
+        handleClose();
+    }
+
     return (
-        <Dialog onClose={handleClose} open={open} fullWidth>
+        <Dialog
+            onClose={handleClose}
+            open={open}
+            classes={{ paper: classes.paper }}
+            fullWidth
+            maxWidth="md"
+        >
             <List component="nav">
+                <ListItem>
+                    <Grid container>
+                        <Grid item xs={1} />
+                        <Grid item xs={5}>
+                            <Typography>Código do produto</Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Typography>Produto</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                            <Typography>Preço</Typography>
+                        </Grid>
+                    </Grid>
+                </ListItem>
                 {list.map((product) => (
                     <ListItem key={product._id}>
-                        <Grid container>
-                            <Grid item xs={6}>
+                        <Grid container alignItems="center">
+                            <Grid item xs={1}>
+                                <img
+                                    src={product.image_link}
+                                    alt={product.name}
+                                    width={30}
+                                    height={'auto'}
+                                />
+                            </Grid>
+                            <Grid item xs={5}>
                                 <Typography>{product._id}</Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={3}>
                                 <Typography>{product.name}</Typography>
                             </Grid>
-                            <Grid item xs={2}>
-                                <Typography align="right">
+                            <Grid item xs={1}>
+                                <Typography>
                                     R${' '}
                                     {currency(product.price)
                                         .divide(100)
                                         .format()}
                                 </Typography>
+                            </Grid>
+                            <Grid item xs={2} style={{ textAlign: 'center' }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleClick(product._id)}
+                                >
+                                    Adicionar
+                                </Button>
                             </Grid>
                         </Grid>
                     </ListItem>
@@ -68,6 +111,7 @@ function ListProducts({ open, handleClose }) {
 ListProducts.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
+    addToList: PropTypes.func.isRequired,
 };
 
 export default function Caixa() {
@@ -94,25 +138,6 @@ export default function Caixa() {
     // product image
     const [addedProductImage, setAddedProductImage] = useState('');
 
-    // snackbar status
-    const [open, setOpen] = useState({
-        status: false,
-        message: '',
-    });
-    const handleClick = ({ message }) => {
-        setOpen({
-            status: true,
-            message,
-        });
-    };
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen({ ...open, status: false });
-    };
-
     // add products to cart
     function addToList({ values, resetForm }) {
         const matchedProduct = stockProductsState.products.filter(
@@ -128,10 +153,18 @@ export default function Caixa() {
         }
         dispatch(addToCart(matchedProduct[0], values.quantity));
         setAddedProductImage(matchedProduct[0].image_link);
-        resetForm({
-            product: '',
-            quantity: 1,
-        });
+        dispatch(
+            openSnackbar({
+                message: `${matchedProduct[0].name} foi adicionado ao carrinho`,
+                status: 'success',
+            })
+        );
+        if (resetForm) {
+            resetForm({
+                product: '',
+                quantity: 1,
+            });
+        }
     }
 
     // lottie icon
@@ -278,21 +311,12 @@ export default function Caixa() {
                             <ListProducts
                                 open={productListing}
                                 handleClose={handleClickClose}
+                                addToList={addToList}
                             />
                         </Form>
                     )}
                 </Formik>
             </Container>
-            <Snackbar
-                open={open.status}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert onClose={handleClose} severity="error">
-                    {open.message}
-                </Alert>
-            </Snackbar>
         </div>
     );
 }
