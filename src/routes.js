@@ -22,20 +22,22 @@ function PrivateRoute({ children, ...rest }) {
 
     const stockProductsState = useSelector((state) => state.stockProducts);
 
-    if (stockProductsState.loading) {
-        return (
-            <div className="flex-all-center-column-div flex-full">
-                <CircularProgress />
-            </div>
-        );
-    }
+    if (isAuthenticated()) {
+        if (stockProductsState.loading) {
+            return (
+                <div className="flex-all-center-column-div flex-full">
+                    <CircularProgress />
+                </div>
+            );
+        }
 
-    if (stockProductsState.error) {
-        return (
-            <div>
-                <Typography>Error!</Typography>
-            </div>
-        );
+        if (stockProductsState.error) {
+            return (
+                <div>
+                    <Typography>Error!</Typography>
+                </div>
+            );
+        }
     }
 
     return (
