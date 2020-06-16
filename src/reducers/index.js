@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 
+import cartReducer from './cartReducer';
 import snackbarReducer from './snackbarReducer';
 import stockProductsReducer from './stockProductsReducer';
-import cartReducer from './cartReducer';
 
 const rootReducers = combineReducers({
     snackbar: snackbarReducer,

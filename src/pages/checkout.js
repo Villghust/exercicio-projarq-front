@@ -8,11 +8,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import currency from 'currency.js';
 import { Form, Formik } from 'formik';
 
+import { resetCart } from '../actions/cartActions';
 import { openSnackbar } from '../actions/snackbarActions';
 import wallet from '../assets/icons/wallet';
 import Cart from '../components/cart';
 import api from '../services/api';
-import { resetCart } from '../actions/cartActions';
 
 const buttonStyles = makeStyles({
     root: {

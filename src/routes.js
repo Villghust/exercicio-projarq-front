@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
     BrowserRouter as Router,
     Route,
@@ -6,16 +7,15 @@ import {
     Redirect,
 } from 'react-router-dom';
 
+import { CircularProgress, Typography } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
+import useUpdateProducts from './hooks/useUpdateProducts';
 import Caixa from './pages/caixa';
 import Checkout from './pages/checkout';
 import Login from './pages/login';
 import Logout from './pages/logout';
 import { isAuthenticated } from './utils/checkAuthentication';
-import useUpdateProducts from './hooks/useUpdateProducts';
-import { useSelector } from 'react-redux';
-import { CircularProgress, Typography } from '@material-ui/core';
 
 function PrivateRoute({ children, ...rest }) {
     useUpdateProducts();

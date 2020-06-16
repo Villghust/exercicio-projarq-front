@@ -1,10 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import { Divider, List, ListItem, Grid, Typography } from '@material-ui/core';
 import currency from 'currency.js';
 
 import emptyCart from '../../assets/icons/empty-cart.svg';
-import { useSelector } from 'react-redux';
 
 export default function Cart() {
     const list = useSelector((state) => state.cart.list);

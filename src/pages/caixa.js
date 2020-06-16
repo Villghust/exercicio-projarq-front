@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Lottie from 'react-lottie';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -19,12 +20,11 @@ import currency from 'currency.js';
 import { Formik, Form, Field } from 'formik';
 import PropTypes from 'prop-types';
 
+import { addToCart } from '../actions/cartActions';
+import { openSnackbar } from '../actions/snackbarActions';
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
 import useApiRequest from '../hooks/useApiRequest';
-import { useDispatch, useSelector } from 'react-redux';
-import { openSnackbar } from '../actions/snackbarActions';
-import { addToCart } from '../actions/cartActions';
 
 let initialValues = {
     cartList: [],
