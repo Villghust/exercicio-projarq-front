@@ -15,8 +15,8 @@ function useUpdateProducts() {
             if (stockProductsState.products.length === 0) {
                 dispatch(updateProducts());
             }
-            //eslint-disable-next-line
         }
+        //eslint-disable-next-line
     }, []);
 }
 

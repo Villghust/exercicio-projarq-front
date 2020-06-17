@@ -10,3 +10,7 @@ export const addToCart = (product, quantity) => (dispatch) => {
 export const resetCart = () => (dispatch) => {
     dispatch({ type: types.RESET_CART });
 };
+
+export const deleteItem = (id) => (dispatch) => {
+    dispatch({ type: types.DELETE_FROM_CART, value: id });
+};

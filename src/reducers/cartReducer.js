@@ -21,6 +21,14 @@ function addToCart(oldObject, addedProduct) {
     return Object.assign({}, oldObject);
 }
 
+function deleteFromCart(oldObject, productId) {
+    const itemIndex = oldObject.list
+        .map((product) => product._id)
+        .indexOf(productId);
+    oldObject.list.splice(itemIndex, 1);
+    return Object.assign({}, oldObject);
+}
+
 const cartReducer = (state = initialState, { type, value }) => {
     switch (type) {
         case types.ADD_TO_CART:
@@ -29,6 +37,8 @@ const cartReducer = (state = initialState, { type, value }) => {
             return {
                 list: [],
             };
+        case types.DELETE_FROM_CART:
+            return deleteFromCart(state, value);
         default:
             return { ...state };
     }

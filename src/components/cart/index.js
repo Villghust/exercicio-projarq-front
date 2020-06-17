@@ -1,13 +1,29 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Divider, List, ListItem, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import CancelIcon from '@material-ui/icons/Cancel';
 import currency from 'currency.js';
 
+import { deleteItem } from '../../actions/cartActions';
+import { openSnackbar } from '../../actions/snackbarActions';
 import emptyCart from '../../assets/icons/empty-cart.svg';
 
+const useStyles = makeStyles({
+    root: {
+        '&:hover': {
+            cursor: 'pointer',
+        },
+    },
+});
+
 export default function Cart() {
+    const classes = useStyles();
+
     const list = useSelector((state) => state.cart.list);
+
+    const dispatch = useDispatch();
 
     function sumTotal({ list }) {
         let total = 0;
@@ -62,7 +78,7 @@ export default function Cart() {
                                     {product.quantity} x {product.name}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={5}>
                                 <Typography align="right">
                                     R${' '}
                                     {currency(product.quantity)
@@ -71,6 +87,20 @@ export default function Cart() {
                                         )
                                         .format()}
                                 </Typography>
+                            </Grid>
+                            <Grid item xs={1} style={{ textAlign: 'center' }}>
+                                <CancelIcon
+                                    classes={{ root: classes.root }}
+                                    onClick={() => {
+                                        dispatch(deleteItem(product._id));
+                                        dispatch(
+                                            openSnackbar({
+                                                message: `${product.name} foi deletado do carrinho`,
+                                                status: 'success',
+                                            })
+                                        );
+                                    }}
+                                />
                             </Grid>
                         </Grid>
                     </ListItem>
