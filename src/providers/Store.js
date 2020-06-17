@@ -1,21 +1,12 @@
-import React, { createContext, useReducer } from 'react';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
 
-import PropTypes from 'prop-types';
+import rootReducers from '../reducers';
 
-import { reducer, initialState, actions } from '../reducers';
+const store = createStore(
+    rootReducers,
+    composeWithDevTools(applyMiddleware(thunk))
+);
 
-export const StoreContext = createContext();
-
-export const StoreProvider = (props) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
-
-    return (
-        <StoreContext.Provider value={{ state, actions, dispatch }}>
-            {props.children}
-        </StoreContext.Provider>
-    );
-};
-
-StoreProvider.propTypes = {
-    children: PropTypes.node,
-};
+export default store;

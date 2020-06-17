@@ -1,19 +1,37 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Divider, List, ListItem, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import CancelIcon from '@material-ui/icons/Cancel';
 import currency from 'currency.js';
-import PropTypes from 'prop-types';
 
+import { deleteItem } from '../../actions/cartActions';
+import { openSnackbar } from '../../actions/snackbarActions';
 import emptyCart from '../../assets/icons/empty-cart.svg';
 
-export default function Cart({ list }) {
+const useStyles = makeStyles({
+    root: {
+        '&:hover': {
+            cursor: 'pointer',
+        },
+    },
+});
+
+export default function Cart() {
+    const classes = useStyles();
+
+    const list = useSelector((state) => state.cart.list);
+
+    const dispatch = useDispatch();
+
     function sumTotal({ list }) {
         let total = 0;
         list.forEach((listProduct) => {
             total = currency(total).add(
-                currency(
-                    currency(listProduct.product.price).divide(100)
-                ).multiply(listProduct.quantity)
+                currency(listProduct.price)
+                    .divide(100)
+                    .multiply(listProduct.quantity)
             );
         });
         return currency(total).format();
@@ -53,24 +71,36 @@ export default function Cart({ list }) {
         >
             <List component="nav">
                 {list.map((product) => (
-                    <ListItem key={product.product._id}>
+                    <ListItem key={product._id}>
                         <Grid container>
                             <Grid item xs={6}>
                                 <Typography>
-                                    {product.quantity} x {product.product.name}
+                                    {product.quantity} x {product.name}
                                 </Typography>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={5}>
                                 <Typography align="right">
                                     R${' '}
                                     {currency(product.quantity)
                                         .multiply(
-                                            currency(
-                                                product.product.price
-                                            ).divide(100)
+                                            currency(product.price).divide(100)
                                         )
                                         .format()}
                                 </Typography>
+                            </Grid>
+                            <Grid item xs={1} style={{ textAlign: 'center' }}>
+                                <CancelIcon
+                                    classes={{ root: classes.root }}
+                                    onClick={() => {
+                                        dispatch(deleteItem(product._id));
+                                        dispatch(
+                                            openSnackbar({
+                                                message: `${product.name} foi deletado do carrinho`,
+                                                status: 'success',
+                                            })
+                                        );
+                                    }}
+                                />
                             </Grid>
                         </Grid>
                     </ListItem>
@@ -83,6 +113,3 @@ export default function Cart({ list }) {
         </div>
     );
 }
-Cart.propTypes = {
-    list: PropTypes.array.isRequired,
-};

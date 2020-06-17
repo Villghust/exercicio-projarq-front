@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import Lottie from 'react-lottie';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import {
     Button,
-    CircularProgress,
     Container,
     Dialog,
     Grid,
     List,
     ListItem,
-    Snackbar,
     TextField,
     Typography,
 } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles } from '@material-ui/core/styles';
 import currency from 'currency.js';
 import { Formik, Form, Field } from 'formik';
 import PropTypes from 'prop-types';
 
+import { addToCart } from '../actions/cartActions';
+import { openSnackbar } from '../actions/snackbarActions';
 import shop from '../assets/icons/shop';
 import Cart from '../components/cart';
-import useApiRequest from '../hooks/useApiRequest';
 
 let initialValues = {
     cartList: [],
@@ -29,30 +29,77 @@ let initialValues = {
     quantity: 1,
 };
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+const useStyles = makeStyles({
+    paper: {
+        padding: 24,
+    },
+});
 
-function ListProducts({ list, open, handleClose }) {
+function ListProducts({ open, handleClose, addToList }) {
+    const classes = useStyles();
+    const list = useSelector((state) => state.stockProducts.products);
+
+    function handleClick(id) {
+        addToList({ values: { product: id, quantity: 1 } });
+        handleClose();
+    }
+
     return (
-        <Dialog onClose={handleClose} open={open} fullWidth>
+        <Dialog
+            onClose={handleClose}
+            open={open}
+            classes={{ paper: classes.paper }}
+            fullWidth
+            maxWidth="md"
+        >
             <List component="nav">
+                <ListItem>
+                    <Grid container>
+                        <Grid item xs={1} />
+                        <Grid item xs={5}>
+                            <Typography>Código do produto</Typography>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Typography>Produto</Typography>
+                        </Grid>
+                        <Grid item xs={1}>
+                            <Typography>Preço</Typography>
+                        </Grid>
+                    </Grid>
+                </ListItem>
                 {list.map((product) => (
                     <ListItem key={product._id}>
-                        <Grid container>
-                            <Grid item xs={6}>
+                        <Grid container alignItems="center">
+                            <Grid item xs={1}>
+                                <img
+                                    src={product.image_link}
+                                    alt={product.name}
+                                    width={30}
+                                    height={'auto'}
+                                />
+                            </Grid>
+                            <Grid item xs={5}>
                                 <Typography>{product._id}</Typography>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={3}>
                                 <Typography>{product.name}</Typography>
                             </Grid>
-                            <Grid item xs={2}>
-                                <Typography align="right">
+                            <Grid item xs={1}>
+                                <Typography>
                                     R${' '}
                                     {currency(product.price)
                                         .divide(100)
                                         .format()}
                                 </Typography>
+                            </Grid>
+                            <Grid item xs={2} style={{ textAlign: 'center' }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleClick(product._id)}
+                                >
+                                    Adicionar
+                                </Button>
                             </Grid>
                         </Grid>
                     </ListItem>
@@ -62,84 +109,62 @@ function ListProducts({ list, open, handleClose }) {
     );
 }
 ListProducts.propTypes = {
-    list: PropTypes.array.isRequired,
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
+    addToList: PropTypes.func.isRequired,
 };
 
 export default function Caixa() {
     // recreate initialValues when rendering form again (when coming back from checkout)
     useEffect(() => {
         initialValues = {
-            cartList: [],
             product: '',
             quantity: 1,
         };
     }, []);
 
+    // dispatch snackbar
+    const dispatch = useDispatch();
+
+    // stock products state
+    const stockProductsState = useSelector((state) => state.stockProducts);
+
+    // products in cart
+    const cartList = useSelector((state) => state.cart.list);
+
     // history hook
     const history = useHistory();
-
-    const { data, loading, error } = useApiRequest(true, '/products');
 
     // product image
     const [addedProductImage, setAddedProductImage] = useState('');
 
-    // snackbar status
-    const [open, setOpen] = useState({
-        status: false,
-        message: '',
-    });
-    const handleClick = ({ message }) => {
-        setOpen({
-            status: true,
-            message,
-        });
-    };
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen({ ...open, status: false });
-    };
-
     // add products to cart
-    function addToList({ values, resetForm, products }) {
-        const product = products.find(
-            (product) => String(product._id) === String(values.product)
+    function addToList({ values, resetForm }) {
+        const matchedProduct = stockProductsState.products.filter(
+            (product) => product._id === values.product
         );
-        if (product === undefined) {
-            handleClick({ message: 'Produto não encontrado' });
-            resetForm();
-            return;
+        if (matchedProduct.length === 0) {
+            return dispatch(
+                openSnackbar({
+                    message: 'Produto não encontrado',
+                    status: 'error',
+                })
+            );
         }
-        let newCartList;
-        if (
-            values.cartList.filter(
-                (listProduct) => listProduct.product._id === product._id
-            ).length > 0
-        ) {
-            values.cartList.map((listProduct) => {
-                if (listProduct.product._id === product._id) {
-                    listProduct.quantity =
-                        parseInt(listProduct.quantity) +
-                        parseInt(values.quantity);
-                    return listProduct;
-                } else return listProduct;
-            });
-        } else {
-            newCartList = values.cartList.push({
-                product: product,
-                quantity: values.quantity,
+        dispatch(addToCart(matchedProduct[0], values.quantity));
+        setAddedProductImage(matchedProduct[0].image_link);
+        dispatch(
+            openSnackbar({
+                message: `${matchedProduct[0].name} foi adicionado ao carrinho`,
+                status: 'success',
+            })
+        );
+        if (resetForm) {
+            resetForm({
+                product: '',
+                quantity: 1,
             });
         }
-        setAddedProductImage(product.image_link);
-        resetForm({
-            cartList: newCartList,
-            product: '',
-            quantity: 1,
-        });
     }
 
     // lottie icon
@@ -162,22 +187,6 @@ export default function Caixa() {
         setProductListing(false);
     };
 
-    if (loading) {
-        return (
-            <div className="flex-all-center-column-div flex-full">
-                <CircularProgress />
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div>
-                <Typography>Error!</Typography>
-            </div>
-        );
-    }
-
     return (
         <div className="flex-all-center-column-div flex-full">
             <Container maxWidth="md">
@@ -190,7 +199,6 @@ export default function Caixa() {
                         addToList({
                             values,
                             resetForm,
-                            products: data,
                         });
                     }}
                 >
@@ -272,8 +280,8 @@ export default function Caixa() {
                                     </Grid>
                                 </Grid>
                                 <Grid item md={6} xs={12}>
-                                    <Cart list={values.cartList} />
-                                    {values.cartList.length > 0 ? (
+                                    <Cart />
+                                    {cartList.length > 0 ? (
                                         <Button
                                             fullWidth
                                             variant="outlined"
@@ -303,22 +311,12 @@ export default function Caixa() {
                             <ListProducts
                                 open={productListing}
                                 handleClose={handleClickClose}
-                                list={data}
+                                addToList={addToList}
                             />
                         </Form>
                     )}
                 </Formik>
             </Container>
-            <Snackbar
-                open={open.status}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert onClose={handleClose} severity="error">
-                    {open.message}
-                </Alert>
-            </Snackbar>
         </div>
     );
 }

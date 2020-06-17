@@ -1,11 +1,18 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Container, Button, TextField } from '@material-ui/core';
+import {
+    Container,
+    Button,
+    Grid,
+    TextField,
+    Typography,
+} from '@material-ui/core';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
 
-import useSnackBar from '../../hooks/useSnackBar';
+import { openSnackbar } from '../../actions/snackbarActions';
 import api from '../../services/api';
 import {
     isAuthenticated,
@@ -16,7 +23,7 @@ import {
 export default function LoginComponent() {
     let history = useHistory();
 
-    const snackbarContext = useSnackBar();
+    const dispatch = useDispatch();
 
     const validationSchema = yup.object().shape({
         username: yup.string().required('Nome de usuário é obrigatório'),
@@ -40,60 +47,88 @@ export default function LoginComponent() {
     return (
         <>
             <Container maxWidth="sm">
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={async (values, { resetForm }) => {
-                        api.post('/sessions', {
-                            email: values.username,
-                            password: values.password,
-                        })
-                            .then((response) => {
-                                snackbarContext.openSnackBar({
-                                    message: 'Login efetuado!',
-                                    status: 'success',
-                                });
-                                saveToken(response.data.token);
-                                saveSession(response.data.session_id);
-                                history.push('/caixa');
-                            })
-                            .catch(() => {
-                                snackbarContext.openSnackBar({
-                                    message: 'Erro ao fazer login',
-                                    status: 'error',
-                                });
-                            });
-                    }}
-                >
-                    {({ errors, touched }) => (
-                        <Form className="flex-all-center-column-div">
-                            <Field
-                                name="username"
-                                variant="outlined"
-                                label="Usuário"
-                                as={TextField}
-                                margin="normal"
-                                error={!!(touched.username && errors.username)}
-                                helperText={touched.username && errors.username}
-                                fullWidth
-                            />
-                            <Field
-                                name="password"
-                                type="password"
-                                variant="outlined"
-                                label="Senha"
-                                as={TextField}
-                                margin="normal"
-                                error={!!(touched.password && errors.password)}
-                                helperText={touched.password && errors.password}
-                                fullWidth
-                            />
-                            <Button type="submit" variant="outlined">
-                                ENTRAR
-                            </Button>
-                        </Form>
-                    )}
-                </Formik>
+                <Grid container spacing={4}>
+                    <Grid item xs={12}>
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={validationSchema}
+                            onSubmit={async (values, { resetForm }) => {
+                                api.post('/sessions', {
+                                    email: values.username,
+                                    password: values.password,
+                                })
+                                    .then((response) => {
+                                        dispatch(
+                                            openSnackbar({
+                                                message: 'Login efetuado!',
+                                                status: 'success',
+                                            })
+                                        );
+                                        saveToken(response.data.token);
+                                        saveSession(response.data.session_id);
+                                        history.push('/caixa');
+                                    })
+                                    .catch(() => {
+                                        dispatch(
+                                            openSnackbar({
+                                                message: 'Erro ao fazer login',
+                                                status: 'error',
+                                            })
+                                        );
+                                    });
+                            }}
+                        >
+                            {({ errors, touched }) => (
+                                <Form className="flex-all-center-column-div">
+                                    <Field
+                                        name="username"
+                                        variant="outlined"
+                                        label="Usuário"
+                                        as={TextField}
+                                        margin="normal"
+                                        error={
+                                            !!(
+                                                touched.username &&
+                                                errors.username
+                                            )
+                                        }
+                                        helperText={
+                                            touched.username && errors.username
+                                        }
+                                        fullWidth
+                                    />
+                                    <Field
+                                        name="password"
+                                        type="password"
+                                        variant="outlined"
+                                        label="Senha"
+                                        as={TextField}
+                                        margin="normal"
+                                        error={
+                                            !!(
+                                                touched.password &&
+                                                errors.password
+                                            )
+                                        }
+                                        helperText={
+                                            touched.password && errors.password
+                                        }
+                                        fullWidth
+                                    />
+                                    <Button type="submit" variant="outlined">
+                                        ENTRAR
+                                    </Button>
+                                </Form>
+                            )}
+                        </Formik>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography align="center">
+                            Usuário: test@test.com
+                        </Typography>
+                        <Typography align="center">Senha: 123456</Typography>
+                    </Grid>
+                </Grid>
             </Container>
         </>
     );
